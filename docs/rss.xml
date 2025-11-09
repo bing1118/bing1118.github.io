@@ -1,2 +1,58 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我是周冰 平面设计/网页前端/ctf学习中</title><link>https://bing1118.github.io</link><description>学习经验分享</description><copyright>我是周冰 平面设计/网页前端/ctf学习中</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://bing1118.github.io</link></image><lastBuildDate>Sun, 09 Nov 2025 12:33:57 +0000</lastBuildDate><managingEditor>我是周冰 平面设计/网页前端/ctf学习中</managingEditor><ttl>60</ttl><webMaster>我是周冰 平面设计/网页前端/ctf学习中</webMaster><item><title>hello</title><link>https://bing1118.github.io/post/hello.html</link><description>hello。</description><guid isPermaLink="true">https://bing1118.github.io/post/hello.html</guid><pubDate>Sun, 09 Nov 2025 12:28:36 +0000</pubDate></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>我是周冰 平面设计/网页前端/ctf学习中</title><link>https://bing1118.github.io</link><description>学习经验分享</description><copyright>我是周冰 平面设计/网页前端/ctf学习中</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://bing1118.github.io</link></image><lastBuildDate>Sun, 09 Nov 2025 13:41:18 +0000</lastBuildDate><managingEditor>我是周冰 平面设计/网页前端/ctf学习中</managingEditor><ttl>60</ttl><webMaster>我是周冰 平面设计/网页前端/ctf学习中</webMaster><item><title>html学习</title><link>https://bing1118.github.io/post/html-xue-xi.html</link><description>&lt;!DOCTYPE html&gt;
+&lt;html lang='en'&gt;
+&lt;head&gt;
+    &lt;meta charset='UTF-8'&gt;
+    &lt;meta name='viewport' content='width=device-width, initial-scale=1.0'&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;p id='para' class=''&gt;段落&lt;/p&gt;
+    &lt;h1&gt;标题1&lt;/h1&gt;
+    &lt;h2&gt;标题2&lt;/h2&gt;
+    &lt;h3&gt;标题3&lt;/h3&gt;
+    &lt;h4&gt;标题4&lt;/h4&gt;
+    &lt;h5&gt;标题5&lt;/h5&gt;
+    &lt;h6&gt;标题6&lt;/h6&gt;
+    &lt;br&gt;
+    &lt;hr&gt;
+    &lt;a href='www.baidu.com'&gt;链接&lt;/a&gt;
+    &lt;hr&gt;
+    &lt;a href='www.baidu.com' target='_blank'&gt;链接&lt;/a&gt;
+    &lt;hr&gt;
+    &lt;img src='桁架2025.png' alt='图片不存在' width='100' height=''&gt;
+    &lt;h1&gt;&lt;b&gt;加粗&lt;/b&gt;&lt;/h1&gt;
+    &lt;h1&gt;&lt;i&gt;斜体&lt;/i&gt;&lt;/h1&gt;
+    &lt;h1&gt;&lt;u&gt;下划线&lt;/u&gt;&lt;/h1&gt;
+    &lt;h1&gt;&lt;s&gt;删除线&lt;/s&gt;&lt;/h1&gt;
+
+    &lt;ul&gt;
+        &lt;li&gt;无序表&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;ol&gt;
+        &lt;li&gt;s&lt;/li&gt;
+        &lt;li&gt;a&lt;/li&gt;
+        &lt;li&gt;d&lt;/li&gt;
+    &lt;/ol&gt;
+
+    &lt;table border='1'&gt;
+        &lt;tr&gt;
+            &lt;th&gt;列标题1&lt;/th&gt;
+            &lt;th&gt;列标题2&lt;/th&gt;
+            &lt;th&gt;列标题3&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th&gt;元素1&lt;/th&gt;
+            &lt;th&gt;元素2&lt;/th&gt;
+            &lt;th&gt;元素3&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/table&gt;
+
+    &lt;form action='#'&gt;
+        &lt;input type='text' placeholder='请输入文本'&gt;
+        &lt;input type='submit' value='submit'&gt;
+    &lt;/form&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;。</description><guid isPermaLink="true">https://bing1118.github.io/post/html-xue-xi.html</guid><pubDate>Sun, 09 Nov 2025 13:40:50 +0000</pubDate></item><item><title>hello</title><link>https://bing1118.github.io/post/hello.html</link><description>hello。</description><guid isPermaLink="true">https://bing1118.github.io/post/hello.html</guid><pubDate>Sun, 09 Nov 2025 12:28:36 +0000</pubDate></item></channel></rss>
