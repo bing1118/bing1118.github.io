@@ -4,3 +4,5 @@
 ### :hibiscus: 5 
 ### :alarm_clock: 2025-11-09 20:33:57 
 ### Powered by :heart: [Gmeek](https://github.com/Meekdai/Gmeek)
+### 点此进入index.html: [index.html](https://bing1118.github.io/docs/index.html)
+
