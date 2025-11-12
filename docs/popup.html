@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生活化软萌祝福弹窗雨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", cursive;
+        }
+        body {
+            background-color: #fff0f5;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(#ffccd5 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+        .popup {
+            position: absolute;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255,255,255,0.6), 0 8px 20px rgba(255,100,150,0.2);
+            opacity: 0;
+            transform: scale(0.4) rotate(-15deg) translateY(50px);
+            transition: all 0.5s cubic-bezier(0.21, 1.08, 0.6, 1.34);
+            z-index: 1;
+            word-wrap: break-word;
+            width: auto;
+            height: auto;
+            line-height: 1.5;
+            border: 3px solid white;
+            color: #333333;
+            font-weight: 600;
+        }
+        @keyframes breathe {
+            0% { transform: scale(1.1) rotate(2deg) translateY(0); }
+            50% { transform: scale(1.15) rotate(2deg) translateY(0); }
+            100% { transform: scale(1.1) rotate(2deg) translateY(0); }
+        }
+        .popup.show {
+            opacity: 1;
+            transform: scale(1.1) rotate(2deg) translateY(0);
+            animation: breathe 3s ease-in-out infinite;
+        }
+        .popup.fade-out {
+            opacity: 0;
+            transform: scale(0.6) rotate(-8deg) translateY(-30px);
+            transition: all 0.4s cubic-bezier(0.64, 0.04, 0.35, 1.2);
+            animation: none;
+        }
+        .popup::after {
+            content: "✨";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 16px;
+            transform: rotate(15deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="popupContainer"></div>
+
+    <script>
+        // 200条具体生活场景祝福语，覆盖日常细节
+        const blessings = [
+            "早上煮鸡蛋刚好是溏心的！", "地铁赶车时门刚好为你开～",
+            "奶茶买一送一还抽到隐藏款！", "加班时同事偷偷塞了块巧克力～",
+            "外卖备注少冰，结果冰量完美！", "走路捡到一枚超可爱的小石子！",
+            "耳机里随机播放全是喜欢的歌！", "下雨天带了伞，雨就停了～",
+            "超市结账时刚好不用排队！", "新买的衣服穿上超合身显白！",
+            "手机快没电时，身边就有共享充电宝！", "吃火锅时毛肚刚好涮到脆嫩！",
+            "早上赖床5分钟，还没迟到！", "快递比预计时间早到了两天！",
+            "上课/上班走神没被老师/领导发现！", "喝可乐时刚好有满杯气泡！",
+            "熬夜赶的方案一次就通过啦！", "出门忘记带钥匙，家人刚好在家！",
+            "小区里的猫主动过来蹭你的手～", "天气预报说下雨，结果是晴天！",
+            "打王者刚好拿到五杀！", "追剧时刚好赶上更新日！",
+            "买水果时老板多送了两个圣女果！", "穿小白鞋出门，一天都没弄脏！",
+            "图书馆刚好有空位还靠窗！", "煮泡面时发现调料包没漏洒！",
+            "给朋友发消息，秒回还带可爱表情包！", "电梯里刚好只有你一个人！",
+            "冬天出门，口袋里有暖手宝！", "夏天吃西瓜，中心最甜的那块是你的！",
+            "考试前复习的内容全考到了！", "打车时司机师傅绕路少还态度好！",
+            "朋友圈发的动态点赞超预期！", "戴口罩出门，口红居然没花！",
+            "家里的绿植突然冒出小嫩芽！", "周末赖床，阳光刚好照在枕头上～",
+            "买咖啡时，店员给了双倍奶泡！", "跑步时刚好遇到凉爽的风！",
+            "整理衣柜时，发现旧衣服里有钱！", "视频通话时，信号超稳定！",
+            "煮饺子时，没有一个破皮的！", "听播客时，刚好是喜欢的嘉宾！",
+            "出门办事，一路绿灯超顺畅！", "买面包时，刚好是刚出炉的！",
+            "手机贴膜，一次就贴完美！", "下雨天，鞋子居然没进水！",
+            "加班回家，楼下便利店还开着！", "网上买的东西，实物比图片好看！",
+            "练瑜伽时，终于做到了下犬式！", "给植物浇水，发现开花了！",
+            "吃烧烤时，烤串刚好不焦不糊！", "坐公交时，刚好有座位还靠窗！",
+            "写作业时，思路超清晰下笔如有神！", "敷面膜时，精华液刚好够全脸！",
+            "打电话时，刚好对方也在想你！", "买文具时，刚好遇到打折促销！",
+            "早上起来，皮肤状态超好！", "玩拼图时，最后一块刚好找到！",
+            "喝牛奶时，没有结块超顺滑！", "出门旅游，拍照全是大片！",
+            "洗头发时，泡沫超多超好洗！", "买电影票时，刚好有情侣座！",
+            "冬天喝热水，杯子是保温的！", "夏天吹空调，温度刚好不冷不热！",
+            "剪头发时，托尼老师完全懂你！", "买水果，挑到的全是甜的！",
+            "打羽毛球时，随手搓出了滚网球！", "写日记时，有超多话想记录！",
+            "听老歌时，回忆全是美好的！", "买零食时，刚好是喜欢的口味！",
+            "出门散步，遇到超可爱的小狗！", "练书法时，字写得超工整！",
+            "喝下午茶时，蛋糕刚好没齁甜！", "坐火车时，邻座是安静的小姐姐！",
+            "买护肤品时，刚好适合自己的肤质！", "下雨时，窗户上的雨滴超有氛围感！",
+            "加班时，领导说可以提前下班！", "买鞋时，刚好是断码特价！",
+            "吃早餐时，油条刚出锅超酥脆！", "玩游戏时，刚好抽到喜欢的皮肤！",
+            "给朋友寄礼物，对方超喜欢！", "早上刷牙，牙膏泡沫刚好不多不少！",
+            "出门购物，拎东西有人帮忙！", "看日出时，刚好没有乌云遮挡！",
+            "煮米饭时，软硬刚好超好吃！", "买鲜花时，花期比预期长！",
+            "听讲座时，内容超实用收获满满！", "买冰淇淋时，没有融化太快！",
+            "坐电梯时，刚好遇到邻居打招呼！", "写代码时，一次运行成功！",
+            "吃沙拉时，酱汁刚好够味！", "买杂志时，刚好有喜欢的明星封面！",
+            "出门跑步，遇到超美的晚霞！", "练钢琴时，终于弹会了那段难曲！",
+            "买糖果时，刚好是小时候的味道！", "下雨天，家里有充足的零食储备！",
+            "加班时，公司提供超好吃的夜宵！", "买袜子时，刚好是成对的！",
+            "吃面条时，汤汁刚好够浓郁！", "玩滑板时，终于学会了转弯！",
+            "买香水时，味道刚好不刺鼻！", "出门遛弯，遇到超美的彩虹！",
+            "写报告时，数据刚好整理完毕！", "喝果汁时，没有渣超清爽！",
+            "买帽子时，刚好适合自己的头型！", "看星星时，天空超干净星星超多！",
+            "煮汤圆时，刚好浮起来熟透了！", "买围巾时，材质超柔软保暖！",
+            "听相声时，全程笑到停不下来！", "买饼干时，刚好是刚生产的！",
+            "出门打车，司机刚好认识目的地！", "练普拉提时，动作越来越标准！",
+            "买洗发水时，香味刚好持久！", "下雨天，家里的灯光超温馨！",
+            "加班时，电脑没有突然死机！", "买手套时，刚好合手不紧绷！",
+            "吃蛋挞时，挞心刚好不烫还流心！", "玩桌游时，刚好赢了一局！",
+            "给家人做饭，他们说超好吃！", "早上起来，没有黑眼圈！",
+            "买钢笔时，书写超流畅！", "看电影时，剧情刚好不狗血！",
+            "喝豆浆时，没有豆渣超细腻！", "出门骑行，路况超好没堵车！",
+            "练画画时，终于画好一幅画！", "买薯片时，刚好是大包装！",
+            "坐地铁时，手机信号超稳定！", "写情书时，文字超动人！",
+            "喝红酒时，口感刚好不涩！", "买腰带时，刚好适合自己的腰围！",
+            "看演唱会时，位置刚好在前排！", "煮玉米时，刚好甜糯可口！",
+            "买眼镜时，度数刚好准确！", "下雨天，雨伞刚好够大！",
+            "加班时，同事陪你一起完成任务！", "买口罩时，刚好是喜欢的颜色！",
+            "吃寿司时，米团刚好不松不散！", "玩过山车时，刚好不恐高！",
+            "给宠物喂食，它们超乖！", "早上起来，房间超整洁！",
+            "买笔记本时，纸张质感超好！", "看纪录片时，内容超震撼！",
+            "喝柠檬水时，酸度刚好不涩！", "出门徒步，路线超清晰！",
+            "练唱歌时，高音刚好唱上去！", "买巧克力时，刚好是纯可可的！",
+            "坐轮船时，海面超平静不晕船！", "写策划时，创意超新颖！",
+            "喝菊花茶时，清热又好喝！", "买拖鞋时，刚好防滑舒适！",
+            "看烟花时，刚好在最佳观赏位！", "煮红薯时，刚好甜糯流蜜！",
+            "买防晒霜时，刚好不油腻！", "下雨天，家里有热水澡可以洗！",
+            "加班时，领导给你涨工资啦！", "买毛巾时，吸水力超强！",
+            "吃小龙虾时，刚好够辣够入味！", "玩密室逃脱时，刚好成功通关！",
+            "给朋友过生日，他们超开心！", "早上起来，喉咙不干燥！",
+            "买文件夹时，刚好够装文件！", "看动漫时，更新的集数超精彩！",
+            "喝普洱茶时，口感刚好醇厚！", "出门滑雪时，雪质超好！",
+            "练跆拳道时，终于升级带位！", "买坚果时，刚好没有坏的！",
+            "坐热气球时，风景超美！", "写小说时，情节超吸引人！",
+            "喝蜂蜜水时，甜度刚好不齁！", "买枕头时，刚好柔软舒适！",
+            "看话剧时，演员演技超棒！", "煮南瓜时，刚好粉糯香甜！",
+            "买指甲油时，颜色刚好显白！", "下雨天，有朋友送你回家！",
+            "加班时，电脑电量刚好够用！", "买发圈时，刚好弹性超好！",
+            "吃螃蟹时，刚好肥美有黄！", "玩跳棋时，刚好赢了长辈！",
+            "给植物换盆，它们长势更好！", "早上起来，阳光超温暖！",
+            "买修正带时，刚好顺滑不卡带！", "看综艺时，全程笑点密集！",
+            "喝玫瑰花茶时，香气超浓郁！", "出门野餐时，天气超好！",
+            "练芭蕾时，站姿越来越标准！", "买薯片时，刚好是低盐的！",
+            "坐缆车时，风景超治愈！", "写总结时，条理超清晰！",
+            "喝薄荷茶时，清凉又解腻！", "买睡衣时，面料超舒服！",
+            "看星星时，刚好有流星划过！", "煮山药时，刚好软糯易消化！",
+            "买眼影时，颜色刚好百搭！", "下雨天，家里有喜欢的剧可以追！",
+            "加班时，收到家人的关心消息！", "买棉签时，刚好够柔软！",
+            "吃牛排时，熟度刚好是五分熟！", "玩狼人杀时，刚好猜对身份！",
+            "给同事带早餐，他们超感谢！", "早上起来，牙齿超白！",
+            "买回形针时，刚好够好用！", "看脱口秀时，段子超搞笑！",
+            "喝绿豆汤时，清热又解暑！", "出门露营时，帐篷刚好稳固！",
+            "练吉他时，终于弹会了喜欢的歌！", "买饼干时，刚好是无蔗糖的！",
+            "坐高铁时，准点出发准点到达！", "写诗歌时，意境超优美！",
+            "喝酸梅汤时，酸甜刚好开胃！", "买拖鞋时，刚好是卡通图案的！",
+            "看日出时，刚好是最佳角度！", "煮芋头时，刚好粉糯香甜！"
+        ];
+
+        const colors = [
+            "#ff9aa2", "#ffb7b2", "#ffdac1", "#e2f0cb", "#b5ead7",
+            "#c7ceea", "#b5d8eb", "#ffc8dd", "#ffafcc", "#d8c3a5",
+            "#f2d7d5", "#d1d9ff", "#ffcece", "#c8e6c9", "#fff3e0",
+            "#ffe0b2", "#ffccbc", "#f8bbd0", "#e1bee7", "#d1c4e9",
+            "#b3e5fc", "#81d4fa", "#80deea", "#a5d6a7", "#c5e1a5",
+            "#fff59d", "#ffee58", "#ffd54f", "#ffab91", "#ff8a65",
+            "#ef9a9a", "#ce93d8", "#b39ddb", "#9fa8da", "#90caf9",
+            "#81d4fa", "#80cbc4", "#aed581", "#dce775", "#fff59d"
+        ];
+
+        const container = document.getElementById("popupContainer");
+        let popupZIndex = 1;
+        const popupDuration = 15000; // 停留15秒
+        const createInterval = 120;
+
+        function getTextColor(bgColor) {
+            const hex = bgColor.replace("#", "");
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128 ? "#333333" : "#ffffff";
+        }
+
+        function createPopup() {
+            const popup = document.createElement("div");
+            popup.className = "popup";
+
+            const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const randomFontSize = Math.floor(Math.random() * 9) + 12;
+            const randomPaddingY = Math.floor(Math.random() * 9) + 12;
+            const randomPaddingX = Math.floor(Math.random() * 11) + 18;
+            const maxLeft = window.innerWidth - 180;
+            const maxTop = window.innerHeight - 100;
+            const left = Math.floor(Math.random() * maxLeft) + 10;
+            const top = Math.floor(Math.random() * maxTop) + 10;
+            const rotate = Math.floor(Math.random() * 21) - 10;
+
+            const textColor = getTextColor(randomColor);
+
+            popup.textContent = randomBlessing;
+            popup.style.backgroundColor = randomColor;
+            popup.style.color = textColor;
+            popup.style.fontSize = `${randomFontSize}px`;
+            popup.style.padding = `${randomPaddingY}px ${randomPaddingX}px`;
+            popup.style.left = `${left}px`;
+            popup.style.top = `${top}px`;
+            popup.style.transform = `scale(0.4) rotate(${rotate}deg) translateY(50px)`;
+            popup.style.zIndex = popupZIndex++;
+
+            container.appendChild(popup);
+            setTimeout(() => {
+                popup.classList.add("show");
+            }, 10);
+
+            setTimeout(() => {
+                popup.classList.add("fade-out");
+                setTimeout(() => {
+                    container.removeChild(popup);
+                }, 400);
+            }, popupDuration);
+        }
+
+        for (let i = 0; i < 15; i++) {
+            setTimeout(createPopup, i * 40);
+        }
+
+        setInterval(createPopup, createInterval);
+    </script>
+</body>
+</html>
