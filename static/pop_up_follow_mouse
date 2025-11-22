@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鼠标跟随软萌祝福弹窗</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", cursive;
+        }
+        body {
+            background-color: #fff0f5;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(#ffccd5 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+        .popup {
+            position: absolute;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255,255,255,0.6), 0 8px 20px rgba(255,100,150,0.2);
+            opacity: 0;
+            transform: scale(0.4) rotate(-15deg) translateY(50px);
+            transition: all 0.5s cubic-bezier(0.21, 1.08, 0.6, 1.34);
+            z-index: 1;
+            word-wrap: break-word;
+            width: auto;
+            height: auto;
+            line-height: 1.5;
+            border: 3px solid white;
+            color: #333333;
+            font-weight: 600;
+            pointer-events: none; /* 不遮挡鼠标 */
+        }
+        @keyframes breathe {
+            0% { transform: scale(1.1) rotate(2deg) translateY(0); }
+            50% { transform: scale(1.15) rotate(2deg) translateY(0); }
+            100% { transform: scale(1.1) rotate(2deg) translateY(0); }
+        }
+        .popup.show {
+            opacity: 1;
+            transform: scale(1.1) rotate(2deg) translateY(0);
+            animation: breathe 3s ease-in-out infinite;
+        }
+        .popup.fade-out {
+            opacity: 0;
+            transform: scale(0.6) rotate(-8deg) translateY(-30px);
+            transition: all 0.4s cubic-bezier(0.64, 0.04, 0.35, 1.2);
+            animation: none;
+        }
+        .popup::after {
+            content: "✨";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 16px;
+            transform: rotate(15deg);
+        }
+    </style>
+</head>
+<body>
+    <div id="popupContainer"></div>
+
+    <script>
+        const blessings = [
+            "早上煮鸡蛋刚好是溏心的！", "地铁赶车时门刚好为你开～",
+            "奶茶买一送一还抽到隐藏款！", "加班时同事偷偷塞了块巧克力～",
+            "外卖备注少冰，结果冰量完美！", "走路捡到一枚超可爱的小石子！",
+            "耳机里随机播放全是喜欢的歌！", "下雨天带了伞，雨就停了～",
+            "超市结账时刚好不用排队！", "新买的衣服穿上超合身显白！"
+        ];
+
+        const colors = [
+            "#ff9aa2", "#ffb7b2", "#ffdac1", "#e2f0cb", "#b5ead7",
+            "#c7ceea", "#b5d8eb", "#ffc8dd", "#ffafcc", "#d8c3a5"
+        ];
+
+        const container = document.getElementById("popupContainer");
+        let popupZIndex = 1;
+        const popupDuration = 3000; // 弹窗停留3秒（更紧凑）
+        let lastCreateTime = 0;
+        const createInterval = 50; // 每50毫秒生成一个（不间断效果）
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // 实时更新鼠标坐标
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // 控制生成频率，避免性能问题
+            const now = Date.now();
+            if (now - lastCreateTime > createInterval) {
+                createPopup();
+                lastCreateTime = now;
+            }
+        });
+
+        function getTextColor(bgColor) {
+            const hex = bgColor.replace("#", "");
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128 ? "#333333" : "#ffffff";
+        }
+
+        function createPopup() {
+            const popup = document.createElement("div");
+            popup.className = "popup";
+
+            // 随机获取内容和样式
+            const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const randomFontSize = Math.floor(Math.random() * 9) + 12;
+            const randomPaddingY = Math.floor(Math.random() * 9) + 12;
+            const randomPaddingX = Math.floor(Math.random() * 11) + 18;
+            const rotate = Math.floor(Math.random() * 21) - 10;
+            const textColor = getTextColor(randomColor);
+
+            // 鼠标附近偏移10-25px，避免遮挡
+            const offsetX = Math.floor(Math.random() * 16) + 10;
+            const offsetY = Math.floor(Math.random() * 16) + 10;
+            let left = mouseX + offsetX;
+            let top = mouseY + offsetY;
+
+            // 防止弹窗超出屏幕
+            left = Math.min(left, window.innerWidth - 100);
+            top = Math.min(top, window.innerHeight - 60);
+            left = Math.max(left, 10);
+            top = Math.max(top, 10);
+
+            // 设置弹窗样式
+            popup.textContent = randomBlessing;
+            popup.style.backgroundColor = randomColor;
+            popup.style.color = textColor;
+            popup.style.fontSize = `${randomFontSize}px`;
+            popup.style.padding = `${randomPaddingY}px ${randomPaddingX}px`;
+            popup.style.left = `${left}px`;
+            popup.style.top = `${top}px`;
+            popup.style.transform = `scale(0.4) rotate(${rotate}deg) translateY(50px)`;
+            popup.style.zIndex = popupZIndex++;
+
+            // 添加到页面并触发动画
+            container.appendChild(popup);
+            setTimeout(() => popup.classList.add("show"), 10);
+
+            // 定时移除弹窗
+            setTimeout(() => {
+                popup.classList.add("fade-out");
+                setTimeout(() => container.removeChild(popup), 400);
+            }, popupDuration);
+        }
+    </script>
+</body>
+</html>
