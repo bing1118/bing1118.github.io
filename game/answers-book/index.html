@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>答案之书</title>
+<meta name="description" content="答案之书网页版：心里想着问题翻开一页，也可以直接翻到指定页。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%231c1916'/><text x='32' y='43' font-size='30' font-family='Kaiti SC,KaiTi,serif' fill='%23d4af37' text-anchor='middle'>答</text></svg>">
+<style>
+:root{
+  --gold:#d4af37; --gold-hi:#f2d98a; --gold-deep:#a8842a;
+  --paper:#f7f1e0; --ink:#2f2a20;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow:hidden;}
+body{
+  background:
+    radial-gradient(1000px 600px at 50% -10%, #241f18 0%, transparent 60%),
+    linear-gradient(178deg, #16120e 0%, #0d0b08 70%, #080705 100%);
+  color:#cfc5b0;
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  height:100vh; display:flex; flex-direction:column; align-items:center;
+  letter-spacing:.2px; -webkit-font-smoothing:antialiased;
+  position:relative;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:1;
+  background:radial-gradient(120% 90% at 50% 40%, transparent 40%, rgba(0,0,0,.55) 100%);
+}
+body::after{
+  content:""; position:fixed; inset:0; pointer-events:none; opacity:.05; z-index:1;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.top{
+  width:min(640px, calc(100% - 28px));
+  display:flex; justify-content:space-between; align-items:center;
+  padding:16px 0 0; font-size:13px; z-index:3;
+}
+.top nav{display:flex; gap:14px; align-items:center;}
+.top a{color:#8a7f68; text-decoration:none;}
+.top a:hover{color:var(--gold);}
+.top a.on{color:var(--gold);}
+
+.stage{
+  flex:1; width:100%; position:relative; z-index:2;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+}
+.glow{
+  position:absolute; left:50%; top:46%; width:640px; height:640px;
+  transform:translate(-50%,-50%); pointer-events:none;
+  background:radial-gradient(closest-side, rgba(212,175,55,.20), rgba(212,175,55,.06) 55%, transparent 75%);
+  filter:blur(30px);
+}
+.dust{ position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.dust span{
+  position:absolute; width:3px; height:3px; border-radius:50%;
+  background:rgba(242,217,138,.8); filter:blur(.5px);
+  opacity:0; animation:float-dust linear infinite;
+}
+@keyframes float-dust{
+  0%{ transform:translateY(30px); opacity:0; }
+  30%{ opacity:.7; }
+  100%{ transform:translateY(-140px); opacity:0; }
+}
+.dust span:nth-child(1){ left:10%; top:78%; animation-duration:9s; }
+.dust span:nth-child(2){ left:22%; top:88%; animation-duration:12s; animation-delay:2s; }
+.dust span:nth-child(3){ left:36%; top:70%; animation-duration:10s; animation-delay:4s; }
+.dust span:nth-child(4){ left:52%; top:86%; animation-duration:13s; animation-delay:1s; }
+.dust span:nth-child(5){ left:68%; top:74%; animation-duration:9.5s; animation-delay:3s; }
+.dust span:nth-child(6){ left:82%; top:84%; animation-duration:11s; animation-delay:5s; }
+.dust span:nth-child(7){ left:44%; top:92%; animation-duration:14s; animation-delay:6s; }
+.dust span:nth-child(8){ left:90%; top:68%; animation-duration:10.5s; animation-delay:7s; }
+
+/* ---------- 书 ---------- */
+.fitbox{ margin:0 auto; }
+.scene{ display:flex; justify-content:center; align-items:center; perspective:1600px; }
+.book{ position:relative; width:340px; height:480px; }
+.book.wide{ width:640px; height:430px; }
+
+.spread{
+  position:absolute; inset:0;
+  background:linear-gradient(150deg,#221d16,#0f0c08);
+  border-radius:10px 10px 14px 14px;
+  box-shadow:0 40px 90px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06);
+  display:flex;
+}
+.page{
+  position:relative; flex:1; margin:12px 7px;
+  background:linear-gradient(160deg,#fbf5e3,#f3ecd6);
+  border-radius:6px;
+  box-shadow:inset 0 0 34px rgba(120,90,20,.10);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:24px;
+}
+.page.left{ border-radius:2px 9px 9px 2px; }
+.page.right{ border-radius:9px 2px 2px 9px; transform-origin:left center; }
+.page.right.turn{ animation:pageturn .4s ease; }
+@keyframes pageturn{ 0%{ transform:rotateY(-24deg); opacity:.35; } 100%{ transform:rotateY(0); opacity:1; } }
+.gutter{
+  flex:none; width:28px; margin:12px 0; align-self:stretch;
+  background:linear-gradient(90deg, transparent, rgba(60,40,5,.4) 50%, transparent);
+}
+.ghost{
+  font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;
+  color:rgba(60,45,15,.20); font-size:21px; letter-spacing:4px; line-height:2.3;
+}
+.pageno{ font-size:12px; color:var(--gold-deep); letter-spacing:3px; }
+.pageno.bottom{ margin-top:18px; color:var(--faint); }
+.answer{
+  font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;
+  font-size:38px; color:var(--ink); line-height:1.8; letter-spacing:5px;
+  margin:18px 0; max-width:100%; text-align:center;
+  text-wrap:balance;
+}
+.answer.small{ font-size:26px; letter-spacing:3px; }
+.rule{ width:48px; height:1px; background:linear-gradient(90deg,transparent,var(--gold-deep),transparent); }
+
+/* 封面 */
+.cover{
+  position:absolute; inset:0; z-index:3; transform-origin:left center;
+  background:
+    radial-gradient(120% 80% at 30% 20%, rgba(255,225,150,.06), transparent 50%),
+    linear-gradient(150deg,#2b2723 0%, #17130e 55%, #0c0a07 100%);
+  border-radius:7px 13px 13px 7px;
+  box-shadow:18px 26px 54px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:center;
+  backface-visibility:hidden; cursor:pointer; overflow:hidden;
+}
+.cover::before{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:17px;
+  background:linear-gradient(90deg, rgba(0,0,0,.7), rgba(255,255,255,.05) 75%, transparent);
+}
+.sheen{
+  position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(115deg, transparent 32%, rgba(255,228,150,.10) 45%, rgba(255,228,150,.16) 50%, rgba(255,228,150,.10) 55%, transparent 68%);
+  background-size:260% 100%; background-position:130% 0;
+  animation:sheen 6s ease infinite;
+}
+@keyframes sheen{ 0%,55%{ background-position:130% 0; } 100%{ background-position:-70% 0; } }
+.book.open .cover{ animation:flip .85s cubic-bezier(.4,.1,.3,1) forwards; }
+@keyframes flip{ 0%{ transform:rotateY(0); } 100%{ transform:rotateY(-178deg); } }
+.book.open{ animation:bookgrow .85s cubic-bezier(.4,.1,.3,1) forwards; }
+@keyframes bookgrow{ 0%{ width:340px; height:480px; } 100%{ width:640px; height:430px; } }
+.foil{
+  width:min(280px, 82%); padding:40px 12px 32px; text-align:center; position:relative;
+  border:1px solid rgba(212,175,55,.85); border-radius:3px;
+}
+.foil::before, .foil::after{
+  content:""; position:absolute; width:8px; height:8px; border:1px solid var(--gold);
+  transform:rotate(45deg);
+}
+.foil::before{ top:-4.5px; left:-4.5px; }
+.foil::after{ bottom:-4.5px; right:-4.5px; }
+.cover .cn{
+  font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;
+  font-size:46px; letter-spacing:10px; margin-right:-10px;
+  white-space:nowrap;
+  background:linear-gradient(180deg,#f6dd8e 0%, #d4af37 45%, #a67c1a 62%, #ecd06a 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.cover .en{ font-size:10px; color:#c9a94f; letter-spacing:4px; margin-top:14px; white-space:nowrap; }
+.cover .orn{ width:54px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:18px auto 0; }
+.cover .press{ margin-top:24px; font-size:11px; color:#93815a; letter-spacing:3px; }
+
+/* ---------- 控制 ---------- */
+.controls{ margin-top:22px; display:flex; gap:9px; justify-content:center; flex-wrap:wrap; }
+.jumprow{ margin-top:12px; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
+.btn{
+  cursor:pointer; border:1px solid rgba(212,175,55,.35); background:rgba(212,175,55,.07);
+  color:var(--gold-hi); border-radius:999px; padding:9px 20px;
+  font-family:inherit; font-size:14px; letter-spacing:1px; white-space:nowrap;
+}
+.btn:hover{ background:rgba(212,175,55,.16); border-color:rgba(212,175,55,.6); }
+.btn:active{ transform:scale(.96); }
+.btn.primary{
+  background:linear-gradient(160deg,#ecd06a,#c39b2b); color:#1c1508;
+  border-color:#e8cd7a; font-weight:700; letter-spacing:2px;
+  box-shadow:0 6px 20px rgba(212,175,55,.25);
+}
+.btn.primary:hover{ box-shadow:0 8px 26px rgba(212,175,55,.4); }
+input[type=number]{
+  width:82px; padding:9px 8px; border:1px solid rgba(212,175,55,.35); border-radius:999px;
+  background:rgba(212,175,55,.06); color:var(--gold-hi);
+  font-family:inherit; font-size:14px; text-align:center; letter-spacing:1px;
+}
+input[type=number]:focus{ outline:none; border-color:var(--gold); }
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button{ -webkit-appearance:none; }
+
+.hidden{ display:none !important; }
+@media (max-width:460px){
+  .ghost{ font-size:17px; }
+  .answer{ font-size:30px; }
+  .answer.small{ font-size:22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span><a href="../">bing1118</a></span>
+  <nav>
+    <a href="../game/nailong-2048/">奶龙 2048</a>
+    <a href="https://github.com/bing1118" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</div>
+
+<div class="stage">
+  <div class="glow"></div>
+  <div class="dust"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+  <!-- 合上的书 -->
+  <div id="closedView">
+    <div class="fitbox" id="closedFit">
+      <div class="scene">
+        <div class="book" id="book">
+          <div class="spread">
+            <div class="page left"><div class="ghost">把问题放在心里</div></div>
+            <div class="gutter"></div>
+            <div class="page right">
+              <div class="answer" id="peekAnswer">&nbsp;</div>
+            </div>
+          </div>
+          <div class="cover" id="cover" title="点一下翻开">
+            <div class="sheen"></div>
+            <div class="foil">
+              <div class="cn">答案之书</div>
+              <div class="en">THE BOOK OF ANSWERS</div>
+              <div class="orn"></div>
+              <div class="press">心里想着你的问题</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="openBtn">翻开一页</button>
+    </div>
+    <div class="jumprow">
+      <input id="pageInput" type="number" min="1" step="1" placeholder="页码">
+      <button class="btn" id="jumpBtn">翻到这页</button>
+    </div>
+  </div>
+
+  <!-- 摊开的书 -->
+  <div id="openView" class="hidden">
+    <div class="fitbox" id="openFit">
+      <div class="scene">
+        <div class="book wide" id="openBookEl">
+          <div class="spread">
+            <div class="page left"><div class="ghost">把问题放在心里</div></div>
+            <div class="gutter"></div>
+            <div class="page right" id="pageR">
+              <div class="pageno" id="pageNo">第 1 页</div>
+              <div class="answer" id="answerText">&nbsp;</div>
+              <div class="rule"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="againBtn">重新来</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+/* 答案之书：随机翻开或指定页码翻开，看完重新来 */
+const ANSWERS = [
+  '是。','当然。','毫无疑问。','就这么办。','立刻去做。','这是最好的时机。','去做吧。','相信它。',
+  '你早就知道答案了。','是的，而且要快。','行。','可以。','让它发生。','大胆一点。','答案是你想的那样。',
+  '值得。','买。','去。','说出口。','答应他。','接受它。','报名。','出发。','点头。','全部投入。',
+  '就这样定下来。','明天就动手。','不用再问了。','它配得上。','你已经准备好了。','这件事会成。',
+  '不是。','别。','现在还不行。','放弃它。','换条路。','不要回头。','删掉。','算了。','收手。',
+  '别信。','离开那里。','拒绝。','挂掉。','退掉。','别买了。','撤。','别答应。','趁早止损。',
+  '这不是你要打的仗。','放下。','绕开它。','否。','没戏。','到此为止。','断了这个念头。',
+  '先别冲动。','这不是重点。','换个话题。','省下这笔钱。','别熬夜想这件事。','再想想别的。',
+  '再等等。','时间会给你答案。','不急。','三个月后再看。','明年再说。','等一个信号。','睡一觉再说。',
+  '过完这周再说。','时机未到。','种子还没发芽。','让它发酵。','先放一放。','静静看着。','别催。',
+  '急什么。','冬天过去就好了。','晚一点会更好。','答案在路上。','再等一次日出。','喝口茶再决定。',
+  '深呼吸，然后等。','事情自己会解决。','让子弹飞一会儿。','等它自己开口。','现在还不是时候。',
+  '先做十分钟。','写下来。','列个清单。','打个电话。','发条消息。','出门走走。','跑步去。',
+  '洗澡的时候想。','先吃顿好的。','把它拆成三步。','从小事开始。','先道歉。','原谅。',
+  '把话说出来。','去问当事人。','查查资料。','做个计划。','定个闹钟。','现在就收拾桌子。',
+  '删掉重写。','预订。','试一试。','请教懂行的人。','今天早点睡。','多喝水。','关机一小时。',
+  '把房间打扫了。','换个地方坐。','今天先到这里。','动笔。','先把它做完。','给未来的你写句话。',
+  '去晒晒太阳。','数到十再回复。','先记下来，明天看。',
+  '你真的想要吗？','你在逃避什么？','问你自己。','换位想想。','少想，多做。','你在怕什么？',
+  '最坏的结果是什么？','如果没有任何限制呢？','十年后这事还重要吗？','是谁的意见在左右你？',
+  '你上一次开心是什么时候？','问题问对了吗？','也许你才是那个变量。','值得熬这一夜吗？',
+  '你的直觉呢？','缺的是运气，还是努力？','是想要，还是不甘心？','你在跟谁较劲？',
+  '这真的是你的目标吗？','别把决定权交给书。','答案重要，还是姿态重要？','说出口的话，和心里想的一致吗？',
+  '看他怎么做，别听他怎么说。','两样都要会很累，选一样。','先保住底线，再谈理想。',
+  '跟钱走，不如跟心走。','都试试，留一个。','如果输得起，就去。','如果输不起，就撤。',
+  '抛个硬币，升起的那一瞬间你就知道答案了。','听朋友的，决定自己做。','先讲清楚，再谈感情。',
+  '白纸黑字。','能睡觉就别争吵。','谁的损失大，谁先让步。','把选择留给未来的你。',
+  '悄悄进行，成了再说。','留一手。','问问家里人的意见。',
+  '顺其自然。','缘分未到。','你说了算。','都可以。','这重要吗？','谁在乎呢。','去问风。',
+  '月亮知道。','宇宙正在排版。','这个问题本身就有答案。','恭喜，你其实已经有想法了。',
+  '翻到这页的人都会问这个。','别翻书了，去睡觉。','命中注定要绕远路。','世界很大，这件事很小。',
+  '保持神秘。','装作不在意，直到真的不在意。','微笑，然后离场。','天意。','随心。','未完待续。',
+  '答案保密。','本页故意留白。','再翻一次试试。','天机不可泄露。','答案在下一页。','此页无字，胜有字。',
+];
+const N = ANSWERS.length;
+
+const $ = id => document.getElementById(id);
+const coverView = $('closedView'), openView = $('openView');
+let cur = 0, last = 0;
+
+function show(page){
+  cur = Math.min(Math.max(1, page|0), N);
+  $('pageNo').textContent = '第 ' + cur + ' 页';
+  const a = ANSWERS[cur-1];
+  const el = $('answerText');
+  el.textContent = a;
+  el.classList.toggle('small', a.length > 12);
+  const pr = $('pageR');
+  pr.classList.remove('turn'); void pr.offsetWidth; pr.classList.add('turn');
+}
+function turnSound(){ tone(700,.12,'triangle',.12,-260); tone(320,.1,'sine',.08,120,.05); }
+function openBook(){ coverView.classList.add('hidden'); openView.classList.remove('hidden'); fitBook(); fitAnswer(); }
+function fitAnswer(){
+  const el = $('answerText');
+  if (!el.textContent || el.textContent === ' ') return;
+  let size = el.classList.contains('small') ? 26 : 38;
+  el.style.fontSize = size + 'px';
+  let guard = 0;
+  while (el.scrollWidth > el.clientWidth - 6 && size > 20 && guard++ < 12){
+    size -= 2; el.style.fontSize = size + 'px';
+  }
+}
+function closeBook(){ openView.classList.add('hidden'); coverView.classList.remove('hidden'); cur = 0; fitBook(); }
+function flipWith(p){
+  show(p); turnSound();
+  const book = $('book');
+  book.classList.remove('open'); void book.offsetWidth;
+  book.classList.add('open');
+  setTimeout(() => { openBook(); book.classList.remove('open'); }, 880);
+}
+function flipAndOpen(){
+  let p;
+  do { p = 1 + Math.floor(Math.random()*N); } while (p === last && N > 1);
+  last = p;
+  flipWith(p);
+}
+function flipToPage(p){
+  p = Math.min(Math.max(1, p|0), N);
+  last = p;
+  flipWith(p);
+}
+
+$('cover').addEventListener('click', flipAndOpen);
+$('openBtn').addEventListener('click', () => { audioInit(); flipAndOpen(); });
+$('jumpBtn').addEventListener('click', () => {
+  const v = parseInt($('pageInput').value, 10);
+  if (!v || v<1 || v>N) { $('pageInput').value = ''; return; }
+  audioInit(); flipToPage(v);
+});
+$('pageInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('jumpBtn').click(); });
+$('againBtn').addEventListener('click', closeBook);
+
+let AC = null, muted = localStorage.getItem('nl_mute') === '1';
+function audioInit(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
+function tone(f,d,type,v,slide,delay){
+  if(!AC || muted) return;
+  const t0 = AC.currentTime + (delay||0), o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0);
+  if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40,f+slide), t0+d);
+  g.gain.setValueAtTime(v, t0); g.gain.exponentialRampToValueAtTime(.001, t0+d);
+  o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0+d+.02);
+}
+document.addEventListener('pointerdown', audioInit);
+
+/* 内容在任何比例下尽可能大且居中 */
+function fitBook(){
+  const open = !openView.classList.contains('hidden');
+  const base = open ? {w:640, h:430} : {w:340, h:480};
+  const k = Math.min((window.innerWidth - 24) / base.w, (window.innerHeight - 150) / base.h, 1.35);
+  const el = open ? $('openBookEl') : $('book');
+  const fit = open ? $('openFit') : $('closedFit');
+  el.style.transform = (k < 0.995 || k > 1.005) ? 'scale(' + k + ')' : '';
+  el.style.transformOrigin = 'center center';
+  fit.style.width = (base.w * k) + 'px';
+  fit.style.height = (base.h * k) + 'px';
+}
+window.addEventListener('resize', fitBook);
+fitBook();
+
+window.__ba_state = () => ({cur, total:N, answer: ANSWERS[cur-1] || null, open: !openView.classList.contains('hidden')});
+window.__ba_open = p => { show(p); openBook(); };
+</script>
+</body>
+</html>
