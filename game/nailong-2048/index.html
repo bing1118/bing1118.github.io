@@ -6,6 +6,17 @@
 <title>bing1118 · 奶龙 2048</title>
 <meta name="description" content="bing1118 的奶龙 2048：经典 2048 玩法，奶龙进化图鉴，乱斗随机事件。">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐲</text></svg>">
+<link rel="preload" as="image" href="img/tier-02.png">
+<link rel="preload" as="image" href="img/tier-04.png">
+<link rel="preload" as="image" href="img/tier-08.png">
+<link rel="preload" as="image" href="img/tier-16.png">
+<link rel="preload" as="image" href="img/tier-32.png">
+<link rel="preload" as="image" href="img/tier-64.png">
+<link rel="preload" as="image" href="img/tier-128.png">
+<link rel="preload" as="image" href="img/tier-256.png">
+<link rel="preload" as="image" href="img/tier-512.png">
+<link rel="preload" as="image" href="img/tier-1024.png">
+<link rel="preload" as="image" href="img/tier-2048.png">
 <style>
 :root{
   --gold:#a87b10; --gold-deep:#8a6a10;
@@ -199,9 +210,36 @@ kbd{
   .scorebox{padding:4px 10px 5px; min-width:54px;}
   .scorebox b{font-size:17px;}
 }
+/* ---------- 加载页 ---------- */
+#loader{
+  position:fixed; inset:0; z-index:100;
+  background:linear-gradient(178deg,#faf6ec,#f1ead9);
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .45s;
+}
+#loader.off{opacity:0; pointer-events:none;}
+.ld-box{text-align:center;}
+.ld-title{
+  font-family:"ZCOOL KuaiLe","PingFang SC",sans-serif;
+  font-size:22px; color:#7a5c10; letter-spacing:4px; margin-bottom:16px;
+}
+.ld-bar{
+  width:210px; height:8px; margin:0 auto;
+  background:rgba(190,160,90,.25); border-radius:999px; overflow:hidden;
+}
+.ld-bar i{display:block; height:100%; width:0; background:linear-gradient(90deg,#f2c255,#e2a233); border-radius:999px;}
+.ld-num{margin-top:12px; font-size:12px; color:#8d8471; letter-spacing:2px;}
 </style>
 </head>
 <body>
+
+<div id="loader">
+  <div class="ld-box">
+    <div class="ld-title">奶龙集结中</div>
+    <div class="ld-bar"><i id="ldBar"></i></div>
+    <div class="ld-num" id="ldNum">0 / 11</div>
+  </div>
+</div>
 
 <div class="page">
 
@@ -474,6 +512,7 @@ function g2Slide(vals){
   return {out, gained, merges};
 }
 function g2Move(dx,dy){
+  if(!window.__nl2Ready) return;
   if(!g2 || g2.over) return;
   let moved=false, gained=0, comboN=0, shinyHit=0, maxMerged=0;
   const spots=[];
@@ -908,8 +947,26 @@ setInterval(()=>{
   }
 },2000);
 window.__nl2_chaos=()=>g2Chaos();
-/* 预热贴图 */
-TIERS.forEach(t=>{ const i=new Image(); i.src=t.img; });
+/* 预加载全部贴图：全部解码完成才放行进入游戏 */
+window.__nl2Ready=false;
+(function(){
+  var need=TIERS.length, done=0;
+  var bar=$('ldBar'), num=$('ldNum');
+  function tick(){ done++; bar.style.width=Math.round(done/need*100)+'%'; num.textContent=done+' / '+need; if(done>=need) finish(); }
+  function finish(){
+    if(window.__nl2Ready) return;
+    window.__nl2Ready=true;
+    var l=$('loader'); l.classList.add('off');
+    setTimeout(function(){ if(l.parentNode) l.parentNode.removeChild(l); },600);
+  }
+  TIERS.forEach(function(t){
+    var i=new Image();
+    i.onload=tick; i.onerror=tick;
+    if(i.decode) i.decode().catch(function(){});   /* 解码尽力而为，不阻塞计数 */
+    i.src=t.img;
+  });
+  setTimeout(finish, 4000);   /* 兜底：网络再差也不无限等 */
+})();
 </script>
 </body>
 </html>
