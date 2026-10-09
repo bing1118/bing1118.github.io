@@ -1,18 +1,15 @@
 # bing1118.github.io
 
-一款自己写的小游戏：奶龙 2048。纯静态、零依赖、零构建。
+打开就是一款游戏：奶龙 2048。纯静态、零依赖、零构建。
 
 ## 结构
 
 ```
 bing1118.github.io/
-├── index.html              # 入口
+├── index.html              # 奶龙 2048（单文件游戏，打开即玩）
 ├── .gitignore
-└── game/
-    └── nailong-2048/
-        ├── index.html      # 奶龙 2048（单文件游戏，全部逻辑内联）
-        └── img/
-            └── tier-<等级>.png   # 11 张贴图：tier-02.png ~ tier-2048.png
+└── img/
+    └── tier-<等级>.png     # 11 张贴图：tier-02.png ~ tier-2048.png
 ```
 
 命名约定：每个游戏一个文件夹，`index.html` 自包含（样式与逻辑全部内联），
