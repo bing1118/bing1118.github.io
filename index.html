@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>bing1118</title>
-<meta name="description" content="bing1118 的小游戏：奶龙 2048 和答案之书。">
+<meta name="description" content="bing1118 的奶龙 2048：经典 2048 玩法，奶龙进化图鉴，乱斗随机事件。">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23241c3a'/><text x='32' y='44' font-size='34' font-family='Georgia,serif' font-weight='700' fill='%23ffd76a' text-anchor='middle'>b</text></svg>">
 <style>
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -32,7 +32,7 @@ main{flex:1; display:flex; flex-direction:column; justify-content:center; paddin
 h1{font-size:26px; font-weight:800; letter-spacing:.5px; margin-bottom:6px;}
 .intro{color:#8d8471; font-size:14px; margin-bottom:30px;}
 
-.hub{display:flex; gap:24px; flex-wrap:wrap;}
+.hub{display:flex; gap:24px; flex-wrap:wrap; max-width:480px; margin:0 auto;}
 .card{
   position:relative; flex:1; min-width:min(400px,100%); height:420px;
   border-radius:24px; overflow:hidden; text-decoration:none; color:inherit;
@@ -48,16 +48,6 @@ h1{font-size:26px; font-weight:800; letter-spacing:.5px; margin-bottom:6px;}
   box-shadow:0 16px 44px rgba(150,110,40,.16);
 }
 .cardA:hover{box-shadow:0 30px 70px rgba(150,110,40,.26);}
-.cardB{
-  background:
-    radial-gradient(520px 340px at 50% 26%, rgba(212,175,55,.16), transparent 62%),
-    linear-gradient(170deg,#211c15 0%, #0d0b08 100%);
-  border:1px solid #3a3324;
-  box-shadow:0 16px 44px rgba(30,22,8,.4);
-}
-.cardB:hover{box-shadow:0 30px 70px rgba(20,14,4,.55), 0 0 40px rgba(212,175,55,.12);}
-.cardB .t{color:#ecd06a;}
-.cardB .d{color:#9a8f76;}
 
 /* 卡片 A：迷你棋盘 */
 .mini-board{
@@ -76,38 +66,11 @@ h1{font-size:26px; font-weight:800; letter-spacing:.5px; margin-bottom:6px;}
 .cardA:hover .mini-cell:nth-child(1) img{animation:hoptile .6s ease infinite;}
 @keyframes hoptile{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-/* 卡片 B：迷你书 */
-.mini-book-scene{ height:200px; margin-top:30px; display:flex; justify-content:center; perspective:900px; }
-.mini-book{
-  width:128px; height:176px; position:relative; align-self:flex-end;
-  background:linear-gradient(150deg,#2b2723 0%, #17130e 60%, #0c0a07 100%);
-  border-radius:4px 10px 10px 4px;
-  box-shadow:10px 16px 34px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08);
-  display:flex; align-items:center; justify-content:center;
-  transform:rotateX(8deg);
-}
-.mini-book::after{
-  content:""; position:absolute; right:-4px; top:5px; bottom:5px; width:4px;
-  background:repeating-linear-gradient(180deg, #efe6cf 0 2px, #d9cba6 2px 4px);
-  border-radius:0 2px 2px 0;
-}
-.mini-foil{
-  width:96px; height:130px; border:1px solid rgba(212,175,55,.85); border-radius:2px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px;
-}
-.mini-foil .c{
-  font-family:"Kaiti SC","STKaiti","KaiTi","SimSun",serif;
-  font-size:17px; color:#d4af37; letter-spacing:5px; text-indent:5px; white-space:nowrap;
-}
-.mini-foil .e{font-size:6px; color:#c9a94f; letter-spacing:2px;}
-.mini-foil .o{width:26px; height:1px; background:linear-gradient(90deg,transparent,#d4af37,transparent);}
-.cardB:hover .mini-book{animation:booklift .6s ease;}
-@keyframes booklift{0%,100%{transform:rotateX(8deg) translateY(0)}50%{transform:rotateX(2deg) translateY(-8px)}}
+/* 卡片 B：迷你书 */50%{transform:rotateX(2deg) translateY(-8px)}}
 
 /* 卡片文字区 */
 .card-info{padding:0 52px 24px 26px; position:relative; z-index:2;}
 .t{font-size:24px; font-weight:800; letter-spacing:1px; margin-bottom:3px; color:#3b3426;}
-.cardB .t{color:#ecd06a;}
 .d{font-size:13.5px; color:#8d8471; line-height:1.7;}
 .go{
   position:absolute; right:24px; bottom:26px;
@@ -136,8 +99,8 @@ footer a:hover{color:#8d8471;}
 </header>
 
 <main class="wrap">
-  <h1>两个小玩意</h1>
-  <p class="intro">都是自己写着玩的，点卡片直接开始。</p>
+  <h1>一个小玩意</h1>
+  <p class="intro">自己写着玩的，点卡片直接开始。</p>
 
   <div class="hub">
     <a class="card cardA" href="game/nailong-2048/">
@@ -154,22 +117,6 @@ footer a:hover{color:#8d8471;}
       <span class="go">→</span>
     </a>
 
-    <a class="card cardB" href="game/answers-book/">
-      <div class="mini-book-scene">
-        <div class="mini-book">
-          <div class="mini-foil">
-            <span class="c">答案之书</span>
-            <span class="e">THE BOOK OF ANSWERS</span>
-            <span class="o"></span>
-          </div>
-        </div>
-      </div>
-      <div class="card-info">
-        <div class="t">答案之书</div>
-        <div class="d">心里想着问题，翻开一页。或者直接翻到你指定的那一页。</div>
-      </div>
-      <span class="go">→</span>
-    </a>
   </div>
 </main>
 

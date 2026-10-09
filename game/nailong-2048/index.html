@@ -246,7 +246,6 @@ kbd{
   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:13px; color:#8d8471;">
     <a href="../" style="color:inherit; text-decoration:none;">bing1118</a>
     <span style="display:flex; gap:14px;">
-      <a href="../answers-book/" style="color:inherit; text-decoration:none;">答案之书</a>
       <a href="https://github.com/bing1118" target="_blank" rel="noopener" style="color:inherit; text-decoration:none;">GitHub</a>
     </span>
   </div>
@@ -961,8 +960,8 @@ window.__nl2Ready=false;
   }
   TIERS.forEach(function(t){
     var i=new Image();
-    i.onload=tick; i.onerror=tick;
-    if(i.decode) i.decode().catch(function(){});   /* 解码尽力而为，不阻塞计数 */
+    var fin=function(){ if(i.decode) i.decode().then(function(){ tick(); }, function(){ tick(); }); else tick(); };
+    i.onload=fin; i.onerror=fin;
     i.src=t.img;
   });
   setTimeout(finish, 4000);   /* 兜底：网络再差也不无限等 */
